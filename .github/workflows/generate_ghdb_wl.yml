@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
 
       - name: Install scraper_ghdb
         run: python3 -m pip install -r scripts/ghdb_scraper/requirements.txt
@@ -21,17 +21,26 @@ jobs:
       - name: Run scraper_ghdb
         run: python3 scripts/ghdb_scraper/ghdb_scraper.py -o "wordlists/ghdb.json"
 
-      - name: Create local changes
-        run: git add wordlists/ghdb.json
-
-      - name: Commit results to Github
+      - name: Commit results to GitHub
         run: |
           git config --local user.email "you@example.com"
           git config --local user.name "ghdb"
-          git commit -m "Bot ghdb auto update" -a --allow-empty
-
+          git add wordlists/ghdb.json
+          git commit -m "Bot ghdb auto update" -a || echo "No changes to commit"
+          
       - name: Push changes
-        uses: github-actions-x/commit@v3
+        uses: actions/github-script@v6
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const github = require('@actions/github');
+            const { exec } = require('child_process');
+
+            exec('git push origin HEAD:${{ github.ref }}', (error, stdout, stderr) => {
+              if (error) {
+                core.setFailed(`Push failed: ${error.message}`);
+                return;
+              }
+              console.log(stdout);
+              console.error(stderr);
+            });
