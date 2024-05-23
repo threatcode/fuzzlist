@@ -6,43 +6,11 @@ import json
 import time
 import re
 import validators
+import os
 
 # Third party Python libraries.
 import requests
 from bs4 import BeautifulSoup  # noqa
-
-# Custom Python libraries.
-
-
-"""
-Dork dictionary example:
-
-{
-    "id": "2",
-    "date": "2003-06-24",
-    "url_title": "<a href='/ghdb/2'>intitle: 'Ganglia 'Cluster Report for'</a>",
-    "cat_id": [
-        "8",
-        "Files Containing Juicy Info"
-    ],
-    "author_id": [
-        "2168",
-        "anonymous"
-    ],
-    "author": {
-        "id": "2168",
-        "name": "anonymous"
-    },
-    "category": {
-        "cat_id": "8",
-        "cat_title": "Files Containing Juicy Info",
-        "cat_description": "No usernames or passwords, but interesting stuff none the less.",
-        "last_update": "2020-06-12",
-        "records_count": "845",
-        "porder": 0
-    }
-}
-"""
 
 headers = {
     "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -52,73 +20,76 @@ headers = {
     "X-Requested-With": "XMLHttpRequest",
 }
 
-
-
 def check_domain(data):
     return validators.domain(data) is True
 
 def get_dork_description(url_path):
     url = f"https://www.exploit-db.com{url_path}"
-    response = requests.get(url, headers=headers, verify=True)
-    soup = BeautifulSoup(response.content, "html.parser")
-    meta = soup.find_all('meta')
-    for tag in meta:
-        if 'name' in tag.attrs.keys() and tag.attrs['name'].strip().lower() == 'description':
-            return tag.attrs['content']
+    try:
+        response = requests.get(url, headers=headers, verify=True)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, "html.parser")
+        meta = soup.find_all('meta')
+        for tag in meta:
+            if 'name' in tag.attrs.keys() and tag.attrs['name'].strip().lower() == 'description':
+                return tag.attrs['content']
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching URL {url}: {e}")
     return ""
 
-
 def FIX_DORK(dork):
-    #If "-site:gomain.com" remove it
+    # If "-site:gomain.com" remove it
     for match in re.findall(r"((-site:|-inurl|site|inurl)[\"']?([\w\-\.]+)[\"']?)", dork):
         if check_domain(match[2]):
             dork = dork.replace(match[0], "")
-
     return dork
 
-
 def retrieve_google_dorks(json_path, save_individual_categories):
-    """Retrieves all google dorks from https://www.exploit-db.com/google-hacking-database and writes then entire json
-    reponse to a file, all the dorks, and/or the individual dork categories.
+    """Retrieves all google dorks from https://www.exploit-db.com/google-hacking-database and writes the entire JSON
+    response to a file, all the dorks, and/or the individual dork categories.
     """
-
     MYDORKS = {}
 
     url = "https://www.exploit-db.com/google-hacking-database"
 
-    response = requests.get(url, headers=headers, verify=True)
+    try:
+        response = requests.get(url, headers=headers, verify=True)
+        response.raise_for_status()
 
-    if response.status_code != 200:
-        print(f"[-] Error retrieving google dorks from: {url}")
+        # Check if the response is JSON.
+        if 'application/json' in response.headers.get('Content-Type', ''):
+            json_response = response.json()
+        else:
+            print(f"[-] Error: Expected JSON response but got {response.headers.get('Content-Type')}")
+            return
+
+    except requests.exceptions.RequestException as e:
+        print(f"[-] Error retrieving google dorks from: {url} - {e}")
+        return
+    except json.JSONDecodeError as e:
+        print(f"[-] Error decoding JSON response from: {url} - {e}")
         return
 
-    # Extract json data.
-    json_response = response.json()
-
     # Extract recordsTotal and data.
-    total_records = json_response["recordsTotal"]
-    json_dorks = json_response["data"]
+    total_records = json_response.get("recordsTotal", 0)
+    json_dorks = json_response.get("data", [])
 
     # Break up dorks into individual files based off category.
     if save_individual_categories:
-
         # Initialize a new dictionary to organize the dorks by category.
         category_dict = {}
 
         for dork in json_dorks:
-
             # Cast numeric_category_id as integer for sorting later.
             numeric_category_id = int(dork["category"]["cat_id"])
             category_name = dork["category"]["cat_title"]
 
             # Create an empty list for each category if it doesn't already exist.
             if numeric_category_id not in category_dict:
-                # fmt: off
                 category_dict[numeric_category_id] = {
                     "category_name": category_name,
                     "dorks": [],
                 }
-                # fmt: on
 
             category_dict[numeric_category_id]["dorks"].append(dork)
 
@@ -126,53 +97,42 @@ def retrieve_google_dorks(json_path, save_individual_categories):
         category_dict = dict(sorted(category_dict.items()))
 
         for key, value in category_dict.items():
-
             # Provide some category metrics.
             print(f"[*] Category {key} ('{value['category_name']}') has {len(value['dorks'])} dorks")
 
-            #dork_file_name = value["category_name"].lower().replace(" ", "_")
-            #full_dork_file_name = f"dorks/{dork_file_name}.dorks"
             DORKS_TYPE = value["category_name"]
             MYDORKS[DORKS_TYPE] = []
 
-            #print(f"[*] Writing dork category '{value['category_name']}' to file: {full_dork_file_name}")
-
-            #with open(f"{full_dork_file_name}", "w", encoding="utf-8") as fh:
             for dork in value["dorks"]:
-                # Extract dork from <a href> using BeautifulSoup.
-                # "<a href=\"/ghdb/5052\">inurl:_cpanel/forgotpwd</a>"
                 soup = BeautifulSoup(dork["url_title"], "html.parser")
                 extracted_dork = soup.find("a").contents[0]
-                description = get_dork_description(soup.find("a")["href"]).replace("\n\n","\n").replace("\n\n","\n").replace("\n\n","\n").replace("\n\n","\n").strip()
+                description = get_dork_description(soup.find("a")["href"]).replace("\n\n","\n").strip()
                 DORK = FIX_DORK(extracted_dork)
                 if DORK != "" and len(DORK) > 5:
                     if len(description) == 0:
                         print(f"NULL DESCRIPTION FOR {extracted_dork}")
                     MYDORKS[DORKS_TYPE].append({"dork": extracted_dork, "description": description})
-                #fh.write(f"{extracted_dork}\n")
 
-    #SAVE MYDORKS INSIDE A FILE
+    # Ensure the directory exists for saving the JSON file.
+    os.makedirs(os.path.dirname(json_path), exist_ok=True)
+    
+    # Save MYDORKS inside a file.
     with open(json_path, "w", encoding="utf-8") as json_file:
         json.dump(MYDORKS, json_file)
 
     print(f"[*] Total Google dorks retrieved: {total_records}")
 
-
 def get_timestamp():
-    """Retrieve a pre-formated datetimestamp."""
-
+    """Retrieve a pre-formatted datetimestamp."""
     now = time.localtime()
     timestamp = time.strftime("%Y%m%d_%H%M%S", now)
-
     return timestamp
 
-
 if __name__ == "__main__":
-
     categories = {
         1: "Footholds",
         2: "File Containing Usernames",
-        3: "Sensitives Directories",
+        3: "Sensitive Directories",
         4: "Web Server Detection",
         5: "Vulnerable Files",
         6: "Vulnerable Servers",
@@ -201,7 +161,7 @@ if __name__ == "__main__":
         "-i",
         dest="save_individual_categories",
         action="store_true",
-        default=True, #Use always to generate the dorks json
+        default=True,  # Use always to generate the dorks json
         help="Write all the individual dork type files based off the category.",
     )
 
@@ -212,7 +172,6 @@ if __name__ == "__main__":
         default="ghdb.json",
         help="Path to the .json file to save the info",
     )
-
 
     args = parser.parse_args()
 
