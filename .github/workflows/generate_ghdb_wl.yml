@@ -9,6 +9,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@v10
+        with:
+          root-reserve-mb: 32768 # vuln-list dirs + language repositories use more than 12GB of storage
+          remove-android: "true"
+          remove-docker-images: "true"
+          remove-dotnet: "true"
+          remove-haskell: "true"
+          
       - name: Checkout Repo
         uses: actions/checkout@v3
 
