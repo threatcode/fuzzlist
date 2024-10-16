@@ -1,0 +1,30 @@
+name: Run Shell Script
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Install dependencies (e.g., duplicut)
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y duplicut
+
+    # Step 3: Make sure the script is executable
+    - name: Make script executable
+      run: chmod +x olfa.sh
+
+    # Step 4: Run the shell script
+    - name: Run shell script
+      run: ./olfa.sh
