@@ -1,4 +1,6 @@
-#!/bin/bash
+#! /bin/bash
+# To view the changes do:
+# diff original.txt_cleaned <(sort original.txt) | more
 
 regexes=(
     "[\!(,%]" # Ignore noisy characters
@@ -10,45 +12,30 @@ regexes=(
     "\/.*\/.*\/.*\/.*\/.*\/.*\/" # Ignore lines more than 6 directories deep (overly specific)
     "\w{8}-\w{4}-\w{4}-\w{4}-\w{12}" # Ignore UUIDs
     "[0-9]+[a-zA-Z]+[0-9]+[a-zA-Z]+[0-9]+" # Ignore multiple numbers and letters mixed together (likley noise)
-    "\.(png|jpg|jpeg|gif|svg|bmp|ttf|avif|wav|mp4|aac|ajax|css|all|)$" # Ignore low value filetypes
-    "^http" # Ignore web addresses
+    "\.(png|jpg|jpeg|gif|svg|bmp|ttf|avif|wav|mp4|aac|ajax|css|all)$" # Ignore low value filetypes
+    "^$" # Ignores blank lines
 )
 
-# Full list
-echo "[+] Building lists..."
-for f in wordlists/*.txt;
-	do cat $f >> onelistforall_all_tmp.txt
-done
-# Short list
-for f in wordlists/*_short.txt;
-	do cat $f >> onelistforall_short_tmp.txt
-done
-echo "[+] Building done!"
+wordlists=$1
+echo "[+] Cleaning ${wordlists}"
+original_size=$(cat ${wordlists} | wc -l)
 
-cmd1="cat onelistforall_all_tmp.txt"
-cmd2="cat onelistforall_short_tmp.txt"
-# Removing buggy lines
-echo "[+] Cleaning lines..."
+# Build command
+cmd="cat ${wordlists}"
 for regex in "${regexes[@]}"; do
-    cmd1="$cmd1 | grep -avE '${regex}'"
-    cmd2="$cmd2 | grep -avE '${regex}'"
+    cmd="${cmd} | grep -vE '${regex}'"
 done
 
-cmd1="${cmd1} > onelistforall_big.txt"
-cmd2="${cmd2} > onelistforall_short.txt"
+# Add sort, uniq, and save to new file
+cmd="${cmd} | sort | uniq > ${wordlists}_cleaned"
 
-eval $cmd1
-eval $cmd2
+# Execute command
+eval $cmd
 
-echo "[+] Cleaning done!"
+# Calculate changes
+new_size=$(cat ${wordlists}_cleaned | wc -l)
+removed=$((original_size-new_size))
 
-echo "[+] Deduplication in progress..."
-duplicut onelistforall_big.txt -c -o onelistforall.txt
-duplicut onelistforall_short.txt -c -o onelistforallshort.txt
-echo "[+] Deduplication done!"
-final_lines=$(cat onelistforall.txt | wc -l)
-final_lines_short=$(cat onelistforallshort.txt | wc -l)
-echo "[+] onelistforall.txt has ${final_lines} lines"
-echo "[+] onelistforallshort.txt has ${final_lines_short} lines"
-rm -f onelistforall_*.txt
-echo "[+] End"
+echo "[-] Removed ${removed} lines"
+echo "[+] Wordlists is now ${new_size} lines"
+echo "[+] Done"
